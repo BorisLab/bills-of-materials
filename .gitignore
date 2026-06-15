@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# sensitive files
+*.key
+secrets.json
+auth.json
+firebase-credentials.json
