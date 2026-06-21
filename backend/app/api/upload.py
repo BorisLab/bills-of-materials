@@ -1,11 +1,11 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from typing import List, Dict
+from typing import List, Dict, Any
 from app.services.ocr_service import extract_text_from_file
 from app.services.bom_parser import parse_bom_text
 
 router = APIRouter()
 
-@router.post("/upload-bom", response_model=List[Dict[str, str]])
+@router.post("/upload-bom", response_model=List[Dict[str, Any]])
 async def upload_bom_file(file: UploadFile = File(...)):
     """
     Receives a BOM file (PDF or Image), sends it to OCR API,
