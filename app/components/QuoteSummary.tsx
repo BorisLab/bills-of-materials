@@ -7,18 +7,18 @@ import { Download, ArrowLeft, CheckCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export interface QuoteLineOut {
-  id_ligne_devis: int;
-  quantite_demande: int;
+  id_ligne_devis: number;
+  quantite_demande: number;
   libelle_extrait_comp: string;
-  composant_id: int;
+  composant_id: number;
   num_composant_fabric: string;
   description: string;
-  prix_unitaire: float;
+  prix_unitaire: number;
 }
 
 export interface QuoteOut {
-  id_devis: int;
-  prix_total: float;
+  id_devis: number;
+  prix_total: number;
   statut: string;
   lignes: QuoteLineOut[];
 }
@@ -31,19 +31,19 @@ interface QuoteSummaryProps {
 export default function QuoteSummary({ quote, onReset }: QuoteSummaryProps) {
   const generatePDF = () => {
     const doc = new jsPDF();
-    
+
     // Header
     doc.setFontSize(20);
     doc.text(`Devis / BOM #${quote.id_devis}`, 14, 22);
-    
+
     doc.setFontSize(11);
     doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
     doc.text(`Statut: ${quote.statut}`, 14, 36);
-    
+
     // Table
     const tableColumn = ["Référence", "Description", "Quantité", "Prix Unitaire", "Total Ligne"];
     const tableRows: any[] = [];
-    
+
     quote.lignes.forEach(line => {
       const lineData = [
         line.num_composant_fabric,
@@ -54,7 +54,7 @@ export default function QuoteSummary({ quote, onReset }: QuoteSummaryProps) {
       ];
       tableRows.push(lineData);
     });
-    
+
     // @ts-ignore - jspdf-autotable plugin attaches to jsPDF
     doc.autoTable({
       head: [tableColumn],
@@ -64,14 +64,14 @@ export default function QuoteSummary({ quote, onReset }: QuoteSummaryProps) {
       styles: { fontSize: 10 },
       headStyles: { fillColor: [37, 99, 235] } // Blue-600
     });
-    
+
     // Total
     // @ts-ignore
     const finalY = doc.lastAutoTable.finalY || 45;
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
     doc.text(`Total : ${quote.prix_total.toFixed(2)} €`, 14, finalY + 15);
-    
+
     doc.save(`Devis_${quote.id_devis}.pdf`);
   };
 
@@ -83,12 +83,12 @@ export default function QuoteSummary({ quote, onReset }: QuoteSummaryProps) {
         </div>
         <h2 className="text-2xl font-bold text-gray-900">Devis généré avec succès !</h2>
         <p className="text-gray-500 mt-2">Le devis #{quote.id_devis} a bien été enregistré en base de données.</p>
-        
+
         <div className="mt-6 inline-block bg-white border border-gray-200 px-6 py-4 rounded-lg shadow-sm">
           <p className="text-sm text-gray-500 font-medium uppercase tracking-wide">Prix Total Calculé</p>
           <p className="text-4xl font-extrabold text-blue-600 mt-1">{quote.prix_total.toFixed(2)} €</p>
         </div>
-        
+
         <div className="mt-8 flex justify-center space-x-4">
           <button
             onClick={generatePDF}
@@ -106,7 +106,7 @@ export default function QuoteSummary({ quote, onReset }: QuoteSummaryProps) {
           </button>
         </div>
       </div>
-      
+
       <div className="p-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">Détails des composants</h3>
         <div className="overflow-x-auto">
