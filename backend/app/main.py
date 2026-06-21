@@ -21,10 +21,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.api import auth, upload
+from app.api import auth, upload, quotes
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(upload.router, prefix="/api", tags=["bom"])
+app.include_router(quotes.router, prefix="/api/quotes", tags=["quotes"])
 
 @app.get("/")
 def read_root():

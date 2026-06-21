@@ -4,15 +4,16 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Dropzone from '../components/Dropzone';
 import ValidationTable, { BOMComponent } from '../components/ValidationTable';
+import QuoteSummary, { QuoteOut } from '../components/QuoteSummary';
 import { LogOut, FileText, LayoutDashboard } from 'lucide-react';
 
 export default function DashboardPage() {
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
   const [parsedComponents, setParsedComponents] = useState<BOMComponent[] | null>(null);
+  const [finalQuote, setFinalQuote] = useState<QuoteOut | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   // Authentication check
   useEffect(() => {
@@ -31,6 +32,7 @@ export default function DashboardPage() {
     setIsUploading(true);
     setError(null);
     setParsedComponents(null);
+    setFinalQuote(null);
 
     const formData = new FormData();
     formData.append('file', file);
@@ -38,9 +40,9 @@ export default function DashboardPage() {
     try {
       const response = await fetch('http://localhost:8000/api/upload-bom', {
         method: 'POST',
-        // headers: {
-        //   'Authorization': `Bearer ${localStorage.getItem('token')}`
-        // },
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
         body: formData,
       });
 
@@ -61,27 +63,37 @@ export default function DashboardPage() {
   const handleSaveToDatabase = async (components: BOMComponent[]) => {
     setIsSaving(true);
     setError(null);
-    setSuccess(null);
 
     try {
-      // Pour le moment, l'API backend pour sauvegarder le devis n'est pas encore connectée
-      // On simule une requête
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      console.log('Composants à sauvegarder:', components);
-      setSuccess('Le BOM a été enregistré avec succès en base de données !');
-      
-      // On réinitialise l'état après quelques secondes
-      setTimeout(() => {
-        setParsedComponents(null);
-        setSuccess(null);
-      }, 3000);
+      const response = await fetch('http://localhost:8000/api/quotes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(components),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Erreur lors de la création du devis.');
+      }
+
+      const quoteData: QuoteOut = await response.json();
+      setFinalQuote(quoteData);
+      setParsedComponents(null); // Clear the table to show summary
       
     } catch (err: any) {
-      setError('Erreur lors de la sauvegarde.');
+      setError(err.message || 'Erreur lors de la sauvegarde.');
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const resetFlow = () => {
+    setFinalQuote(null);
+    setParsedComponents(null);
+    setError(null);
   };
 
   return (
@@ -109,14 +121,16 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-            <FileText className="h-6 w-6 mr-2 text-gray-400" />
-            Nouveau Devis / BOM
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Importez votre fichier de nomenclature (PDF ou Image) pour l'analyser automatiquement.
-          </p>
+        <div className="mb-8 flex justify-between items-end">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+              <FileText className="h-6 w-6 mr-2 text-gray-400" />
+              Nouveau Devis / BOM
+            </h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Importez votre fichier de nomenclature (PDF ou Image) pour l'analyser automatiquement.
+            </p>
+          </div>
         </div>
 
         {error && (
@@ -129,32 +143,29 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {success && (
-          <div className="mb-6 bg-green-50 border-l-4 border-green-400 p-4 rounded-md">
-            <div className="flex">
-              <div className="ml-3">
-                <p className="text-sm text-green-700">{success}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
         <div className="space-y-8">
           {/* Section d'upload */}
-          {!parsedComponents && (
-            <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+          {!parsedComponents && !finalQuote && (
+            <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 animate-in fade-in">
               <Dropzone onFileSelect={handleFileUpload} isUploading={isUploading} />
             </section>
           )}
 
           {/* Section de validation */}
-          {parsedComponents && (
+          {parsedComponents && !finalQuote && (
             <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               <ValidationTable
                 initialComponents={parsedComponents}
                 onSave={handleSaveToDatabase}
                 isSaving={isSaving}
               />
+            </section>
+          )}
+
+          {/* Section Résumé du devis */}
+          {finalQuote && (
+            <section className="animate-in fade-in zoom-in-95 duration-500">
+              <QuoteSummary quote={finalQuote} onReset={resetFlow} />
             </section>
           )}
         </div>
