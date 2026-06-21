@@ -45,3 +45,14 @@ next-env.d.ts
 secrets.json
 auth.json
 firebase-credentials.json
+
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
