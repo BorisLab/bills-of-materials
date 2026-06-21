@@ -8,6 +8,7 @@ class RoleEnum(str, enum.Enum):
     admin = "admin"
     commercial = "commercial"
     ingenieur = "ingenieur"
+    client = "client"
 
 class QuoteStatusEnum(str, enum.Enum):
     en_attente = "en_attente"

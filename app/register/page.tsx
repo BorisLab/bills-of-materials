@@ -3,18 +3,18 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [role, setRole] = useState('client');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     setIsLoading(true);
 
     try {
@@ -23,8 +23,7 @@ export default function RegisterPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        // We set role to "commercial" by default for the MVP
-        body: JSON.stringify({ email, password, role: "commercial" }),
+        body: JSON.stringify({ email, password, role }),
       });
 
       if (!response.ok) {
@@ -33,9 +32,10 @@ export default function RegisterPage() {
       }
 
       // Inscription réussie, redirection vers la page de connexion
+      toast.success('Inscription réussie ! Vous pouvez maintenant vous connecter.');
       router.push('/login?registered=true');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -55,12 +55,6 @@ export default function RegisterPage() {
             </Link>
           </p>
         </div>
-
-        {error && (
-          <div className="bg-red-50 text-red-700 p-3 rounded text-sm text-center">
-            {error}
-          </div>
-        )}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-3">
@@ -105,6 +99,20 @@ export default function RegisterPage() {
                 className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Mot de passe"
               />
+            </div>
+            <div>
+              <label htmlFor="role" className="sr-only">Rôle</label>
+              <select
+                id="role"
+                name="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              >
+                <option value="client">Client</option>
+                <option value="commercial">Commercial</option>
+                <option value="admin">Administrateur</option>
+              </select>
             </div>
           </div>
 

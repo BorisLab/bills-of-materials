@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Trash2, Save, CheckCircle } from 'lucide-react';
 
 export interface BOMComponent {
+  texte_extrait?: string;
   num_composant_fabric: string;
   description: string;
   quantite_demande: number;
@@ -78,8 +79,11 @@ export default function ValidationTable({ initialComponents, onSave, isSaving }:
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-gray-100">
+                Texte extrait (OCR)
+              </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Référence
+                Correspondance (Référence)
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Description
@@ -95,6 +99,9 @@ export default function ValidationTable({ initialComponents, onSave, isSaving }:
           <tbody className="bg-white divide-y divide-gray-200">
             {components.map((comp, index) => (
               <tr key={index} className="hover:bg-gray-50">
+                <td className="px-6 py-4 text-sm font-mono text-gray-600 border-r border-gray-200 bg-gray-50">
+                  {comp.texte_extrait || "N/A"}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input
                     type="text"

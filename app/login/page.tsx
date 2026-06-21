@@ -3,17 +3,16 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     setIsLoading(true);
 
     const formData = new URLSearchParams();
@@ -35,9 +34,10 @@ export default function LoginPage() {
 
       const data = await response.json();
       localStorage.setItem('token', data.access_token);
+      toast.success('Connexion réussie !');
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -57,12 +57,6 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
-        
-        {error && (
-          <div className="bg-red-50 text-red-700 p-3 rounded text-sm text-center">
-            {error}
-          </div>
-        )}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">

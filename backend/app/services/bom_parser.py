@@ -32,27 +32,29 @@ def parse_bom_text(raw_text: str) -> List[Dict[str, str]]:
     pattern2 = re.compile(r'^\s*(?P<ref>[A-Z0-9\-_]{3,})\s+(?P<qty>\d+)\s+(?P<desc>.*)$', re.IGNORECASE)
 
     for line in lines:
-        line = line.strip()
-        if not line:
+        clean_line = line.strip()
+        if not clean_line:
             continue
             
         # Try Pattern 1
-        match = pattern1.match(line)
+        match = pattern1.match(clean_line)
         if match:
             components.append({
                 "quantite_demande": int(match.group("qty")),
                 "num_composant_fabric": match.group("ref"),
-                "description": match.group("desc").strip()
+                "description": match.group("desc").strip(),
+                "texte_extrait": clean_line
             })
             continue
             
         # Try Pattern 2
-        match = pattern2.match(line)
+        match = pattern2.match(clean_line)
         if match:
             components.append({
                 "quantite_demande": int(match.group("qty")),
                 "num_composant_fabric": match.group("ref"),
-                "description": match.group("desc").strip()
+                "description": match.group("desc").strip(),
+                "texte_extrait": clean_line
             })
             continue
 

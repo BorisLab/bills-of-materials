@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { UploadCloud, File as FileIcon, X } from 'lucide-react';
 
 interface DropzoneProps {
@@ -11,6 +11,24 @@ interface DropzoneProps {
 export default function Dropzone({ onFileSelect, isUploading }: DropzoneProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isUploading) {
+      setProgress(0);
+      interval = setInterval(() => {
+        setProgress((prev) => {
+          // Simulate progress slowing down near the end
+          const increment = prev < 60 ? 5 : prev < 85 ? 2 : prev < 95 ? 0.5 : 0;
+          return Math.min(prev + increment, 95); // Max 95% until done
+        });
+      }, 300);
+    } else {
+      setProgress(0);
+    }
+    return () => clearInterval(interval);
+  }, [isUploading]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -73,35 +91,42 @@ export default function Dropzone({ onFileSelect, isUploading }: DropzoneProps) {
           </p>
         </div>
       ) : (
-        <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
-              <FileIcon className="h-6 w-6" />
+        <div className="flex flex-col p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                <FileIcon className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">{selectedFile.name}</p>
+                <p className="text-xs text-gray-500">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-900">{selectedFile.name}</p>
-              <p className="text-xs text-gray-500">{(selectedFile.size / 1024).toFixed(1)} KB</p>
-            </div>
+            {!isUploading && (
+              <button
+                onClick={clearFile}
+                className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                title="Retirer le fichier"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            )}
           </div>
-          {!isUploading && (
-            <button
-              onClick={clearFile}
-              className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-              title="Retirer le fichier"
-            >
-              <X className="h-5 w-5" />
-            </button>
+          
+          {isUploading && (
+            <div className="mt-4 w-full">
+              <div className="flex justify-between text-xs text-gray-500 mb-1">
+                <span>Analyse OCR en cours...</span>
+                <span>{Math.round(progress)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
+            </div>
           )}
-        </div>
-      )}
-      
-      {isUploading && (
-        <div className="mt-4 flex items-center justify-center text-blue-600 text-sm font-medium">
-          <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Analyse du document en cours par l'OCR...
         </div>
       )}
     </div>
