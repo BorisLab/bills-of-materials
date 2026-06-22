@@ -3,7 +3,7 @@
 import React from 'react';
 import { Download, CheckCircle, ArrowLeft } from 'lucide-react';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 export interface QuoteLineOut {
   id_ligne_devis: number;
@@ -55,8 +55,7 @@ export default function QuoteSummary({ quote, onReset }: QuoteSummaryProps) {
         tableRows.push(lineData);
       });
 
-      // @ts-expect-error autoTable is added by jspdf-autotable plugin
-      doc.autoTable({
+      autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
         startY: 45,
@@ -66,8 +65,8 @@ export default function QuoteSummary({ quote, onReset }: QuoteSummaryProps) {
       });
 
       // Total
-      // @ts-expect-error autoTable is added by jspdf-autotable plugin
-      const finalY = doc.lastAutoTable.finalY || 60;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const finalY = (doc as any).lastAutoTable?.finalY || 60;
       doc.setFontSize(14);
       doc.setFont("helvetica", "bold");
       doc.text(`Total : ${quote.prix_total.toFixed(2)} €`, 14, finalY + 15);

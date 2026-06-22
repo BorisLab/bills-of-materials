@@ -4,58 +4,52 @@ from typing import List, Dict
 def parse_bom_text(raw_text: str) -> List[Dict[str, str]]:
     """
     Parses OCR raw text and attempts to extract BOM components.
-    Looks for patterns that resemble:
-    [Quantity] [Reference] [Description]
-    or
-    [Reference] [Quantity] [Description]
-    
-    This is a basic heuristic parser.
+    Uses flexible heuristics to find references and quantities anywhere in the line.
     """
     components = []
-    
-    # Split text into lines
     lines = raw_text.split("\n")
     
-    # Typical BOM line Regex heuristic:
-    # Matches a line that contains:
-    # 1. An optional sequence of digits (Quantity)
-    # 2. An alphanumeric string often with hyphens (Reference)
-    # 3. Some text (Description)
+    # Reference pattern: 
+    # 1. Contains a hyphen (e.g. RES-10K) 
+    # OR 2. Mixed letters and numbers >= 4 chars (e.g. LM358, 1N4148)
+    ref_pattern = re.compile(r'\b([A-Z]{2,}-[A-Z0-9\-]+|[A-Z]+[0-9]+[A-Z0-9]*|[0-9]+[A-Z]+[A-Z0-9]*)\b', re.IGNORECASE)
     
-    # E.g.: "10  RES-10K  Resistor 10K Ohm 5%"
-    # or "CAP-01  5  Capacitor 0.1uF"
-    
-    # Pattern 1: [Qty] [Ref] [Desc]
-    pattern1 = re.compile(r'^\s*(?P<qty>\d+)\s+(?P<ref>[A-Z0-9\-_]{3,})\s+(?P<desc>.*)$', re.IGNORECASE)
-    
-    # Pattern 2: [Ref] [Qty] [Desc]
-    pattern2 = re.compile(r'^\s*(?P<ref>[A-Z0-9\-_]{3,})\s+(?P<qty>\d+)\s+(?P<desc>.*)$', re.IGNORECASE)
+    # Quantity pattern: standalone number
+    qty_pattern = re.compile(r'\b(\d{1,5})\b')
 
     for line in lines:
         clean_line = line.strip()
         if not clean_line:
             continue
             
-        # Try Pattern 1
-        match = pattern1.match(clean_line)
-        if match:
-            components.append({
-                "quantite_demande": int(match.group("qty")),
-                "num_composant_fabric": match.group("ref"),
-                "description": match.group("desc").strip(),
-                "texte_extrait": clean_line
-            })
+        ref_match = ref_pattern.search(clean_line)
+        if not ref_match:
             continue
             
-        # Try Pattern 2
-        match = pattern2.match(clean_line)
-        if match:
-            components.append({
-                "quantite_demande": int(match.group("qty")),
-                "num_composant_fabric": match.group("ref"),
-                "description": match.group("desc").strip(),
-                "texte_extrait": clean_line
-            })
+        ref = ref_match.group(1).upper()
+        
+        # Avoid matching generic words as references (must not be only letters)
+        if ref.isalpha():
             continue
+            
+        # Try to find quantity
+        line_without_ref = clean_line[:ref_match.start()] + clean_line[ref_match.end():]
+        qty_match = qty_pattern.search(line_without_ref)
+        
+        qty = 1
+        if qty_match:
+            qty = int(qty_match.group(1))
+            line_without_ref = line_without_ref[:qty_match.start()] + line_without_ref[qty_match.end():]
+            
+        # Clean description
+        desc = line_without_ref.strip(" \t|,-;:_")
+        desc = re.sub(r'\s+', ' ', desc) # collapse whitespace
+        
+        components.append({
+            "quantite_demande": qty,
+            "num_composant_fabric": ref,
+            "description": desc if desc else ref,
+            "texte_extrait": clean_line
+        })
 
     return components

@@ -15,7 +15,7 @@ def test_parse_bom_text_format_1():
     assert "Resistor" in components[0]["description"]
 
     assert components[1]["quantite_demande"] == 5
-    assert components[1]["num_composant_fabric"] == "CAP-01uF"
+    assert components[1]["num_composant_fabric"] == "CAP-01UF"
     assert "Capacitor" in components[1]["description"]
 
 def test_parse_bom_text_format_2():
@@ -43,4 +43,6 @@ def test_parse_bom_text_ignores_invalid_lines():
     Just a ref REF-123
     """
     components = parse_bom_text(raw_text)
-    assert len(components) == 0
+    assert len(components) == 1
+    assert components[0]["num_composant_fabric"] == "REF-123"
+    assert components[0]["quantite_demande"] == 1
