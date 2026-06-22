@@ -36,10 +36,8 @@ export default function RegisterPage() {
       router.push('/login?registered=true');
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message || "Une erreur est survenue lors de l'inscription");
         toast.error(err.message);
       } else {
-        setError("Une erreur est survenue lors de l'inscription");
         toast.error("Une erreur est survenue lors de l'inscription");
       }
     } finally {
