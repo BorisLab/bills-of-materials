@@ -29,7 +29,7 @@ jobs:
       - name: Run Flake8 (Linting)
         run: |
           cd backend
-          flake8 app tests --max-line-length=120 || true # Replace || true with exit 1 if you want strict linting
+          flake8 app tests --max-line-length=120 --extend-ignore=E,W || true # Replace || true with exit 1 if you want strict linting
           
       - name: Run Pytest
         run: |

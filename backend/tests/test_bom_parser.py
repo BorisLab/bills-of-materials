@@ -1,4 +1,3 @@
-import pytest
 from app.services.bom_parser import parse_bom_text
 
 def test_parse_bom_text_format_1():

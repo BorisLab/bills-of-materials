@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from typing import List
+from typing import List, Dict
 
 from app.database import get_db
 from app.models import User, Component, Quote, QuoteLine, QuoteStatusEnum

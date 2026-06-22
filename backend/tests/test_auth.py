@@ -14,6 +14,10 @@ async def test_register_user(async_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_register_existing_user(async_client: AsyncClient):
+    await async_client.post(
+        "/auth/register",
+        json={"email": "test@example.com", "password": "password123"},
+    )
     response = await async_client.post(
         "/auth/register",
         json={"email": "test@example.com", "password": "password123"},
@@ -22,6 +26,10 @@ async def test_register_existing_user(async_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_login_user(async_client: AsyncClient):
+    await async_client.post(
+        "/auth/register",
+        json={"email": "test@example.com", "password": "password123"},
+    )
     response = await async_client.post(
         "/auth/login",
         data={"username": "test@example.com", "password": "password123"},
@@ -33,6 +41,10 @@ async def test_login_user(async_client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_login_wrong_password(async_client: AsyncClient):
+    await async_client.post(
+        "/auth/register",
+        json={"email": "test@example.com", "password": "password123"},
+    )
     response = await async_client.post(
         "/auth/login",
         data={"username": "test@example.com", "password": "wrongpassword"},

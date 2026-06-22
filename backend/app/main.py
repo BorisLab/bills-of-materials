@@ -21,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.api import auth, upload, quotes, components
+from app.api import upload, quotes, components
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(upload.router, prefix="/api", tags=["bom"])

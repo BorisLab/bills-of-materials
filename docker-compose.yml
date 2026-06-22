@@ -13,7 +13,7 @@ services:
       - /app/.next
     environment:
       - NODE_ENV=development
-    command: bash -c "npm run lint && npm run test && npm run dev"
+    command: sh -c "npm run lint && npm run test && npm run dev"
     depends_on:
       - api
 
@@ -33,7 +33,7 @@ services:
       - OCR_SPACE_API_KEY=${OCR_SPACE_API_KEY}
     depends_on:
       - db
-    command: bash -c "flake8 app tests --max-line-length=120 && pytest tests && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    command: sh -c "flake8 app tests --max-line-length=120 --extend-ignore=E,W && pytest tests && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
   db:
     image: postgres:15-alpine

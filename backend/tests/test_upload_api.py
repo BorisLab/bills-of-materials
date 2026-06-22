@@ -1,7 +1,6 @@
 from fastapi.testclient import TestClient
 from unittest.mock import patch
 from app.main import app
-from app.services.bom_parser import parse_bom_text
 
 client = TestClient(app)
 
