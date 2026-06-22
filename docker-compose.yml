@@ -13,4 +13,38 @@ services:
       - /app/.next
     environment:
       - NODE_ENV=development
-    command: npm run dev
+    command: sh -c "npm run lint && npm run test && npm run dev"
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/bom_db
+      - SECRET_KEY=supersecretkey_change_me_in_prod
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+      - OCR_SPACE_API_KEY=${OCR_SPACE_API_KEY}
+    depends_on:
+      - db
+    command: sh -c "flake8 app tests --max-line-length=120 --extend-ignore=E,W && pytest tests && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=bom_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
