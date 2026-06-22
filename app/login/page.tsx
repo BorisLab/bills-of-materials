@@ -36,8 +36,12 @@ export default function LoginPage() {
       localStorage.setItem('token', data.access_token);
       toast.success('Connexion réussie !');
       router.push('/dashboard');
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Email ou mot de passe incorrect');
+      } else {
+        toast.error('Email ou mot de passe incorrect');
+      }
     } finally {
       setIsLoading(false);
     }

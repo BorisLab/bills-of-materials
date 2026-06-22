@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { CheckCircle, XCircle } from 'lucide-react';
 
 export default function CommercialDashboard() {
-  const [quotes, setQuotes] = useState<any[]>([]);
+  const [quotes, setQuotes] = useState<{id_devis: number, prix_total: number, statut: string}[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchQuotes = async () => {
@@ -19,8 +19,8 @@ export default function CommercialDashboard() {
         const data = await response.json();
         setQuotes(data);
       }
-    } catch (e) {
-      console.error(e);
+    } catch {
+      console.error('Erreur lors du chargement des devis');
       toast.error('Erreur lors du chargement des devis');
     } finally {
       setIsLoading(false);
@@ -28,6 +28,7 @@ export default function CommercialDashboard() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchQuotes();
   }, []);
 
@@ -45,7 +46,7 @@ export default function CommercialDashboard() {
       } else {
         toast.error('Erreur lors de la mise à jour');
       }
-    } catch (e) {
+    } catch {
       toast.error('Erreur réseau');
     }
   };

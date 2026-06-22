@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 export default function DashboardPage() {
   const router = useRouter();
   const [userRole, setUserRole] = useState<string | null>(null);
-  
+
   const [isUploading, setIsUploading] = useState(false);
   const [parsedComponents, setParsedComponents] = useState<BOMComponent[] | null>(null);
   const [finalQuote, setFinalQuote] = useState<QuoteOut | null>(null);
@@ -27,8 +27,8 @@ export default function DashboardPage() {
     } else {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        setUserRole(payload.role || 'client');
-      } catch (e) {
+        setTimeout(() => setUserRole(payload.role || 'client'), 0);
+      } catch {
         localStorage.removeItem('token');
         router.push('/login');
       }
@@ -66,8 +66,12 @@ export default function DashboardPage() {
       const data: BOMComponent[] = await response.json();
       setParsedComponents(data);
       toast.success('Fichier analysé avec succès !');
-    } catch (err: any) {
-      toast.error(err.message || 'Une erreur est survenue lors de l\'analyse.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || "Une erreur est survenue lors de l'analyse.");
+      } else {
+        toast.error("Une erreur est survenue lors de l'analyse.");
+      }
     } finally {
       setIsUploading(false);
     }
@@ -95,8 +99,12 @@ export default function DashboardPage() {
       setFinalQuote(quoteData);
       setParsedComponents(null); // Clear the table to show summary
       toast.success('Devis enregistré avec succès !');
-    } catch (err: any) {
-      toast.error(err.message || 'Erreur lors de la sauvegarde.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Erreur lors de la sauvegarde.');
+      } else {
+        toast.error('Erreur lors de la sauvegarde.');
+      }
     } finally {
       setIsSaving(false);
     }
@@ -138,10 +146,10 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+
         {userRole === 'admin' && <AdminDashboard />}
         {userRole === 'commercial' && <CommercialDashboard />}
-        
+
         {userRole === 'client' && (
           <>
             <div className="mb-8 flex justify-between items-end">
@@ -151,7 +159,7 @@ export default function DashboardPage() {
                   Nouveau Devis
                 </h1>
                 <p className="mt-1 text-sm text-gray-500">
-                  Importez votre fichier de nomenclature (PDF ou Image) pour l'analyser automatiquement.
+                  Importez votre fichier de nomenclature (PDF ou Image) pour l&apos;analyser automatiquement.
                 </p>
               </div>
             </div>

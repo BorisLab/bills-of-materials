@@ -1,10 +1,9 @@
 "use client";
 
 import React from 'react';
-import { jsPDF } from "jspdf";
-import "jspdf-autotable";
-import { Download, ArrowLeft, CheckCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Download, CheckCircle, ArrowLeft } from 'lucide-react';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 export interface QuoteLineOut {
   id_ligne_devis: number;
@@ -30,49 +29,53 @@ interface QuoteSummaryProps {
 
 export default function QuoteSummary({ quote, onReset }: QuoteSummaryProps) {
   const generatePDF = () => {
-    const doc = new jsPDF();
+    try {
+      const doc = new jsPDF();
 
-    // Header
-    doc.setFontSize(20);
-    doc.text(`Devis / BOM #${quote.id_devis}`, 14, 22);
+      // Header
+      doc.setFontSize(20);
+      doc.text(`Devis / BOM #${quote.id_devis}`, 14, 22);
 
-    doc.setFontSize(11);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
-    doc.text(`Statut: ${quote.statut}`, 14, 36);
+      doc.setFontSize(11);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
+      doc.text(`Statut: ${quote.statut}`, 14, 36);
 
-    // Table
-    const tableColumn = ["Référence", "Description", "Quantité", "Prix Unitaire", "Total Ligne"];
-    const tableRows: any[] = [];
+      // Table
+      const tableColumn = ["Référence", "Description", "Quantité", "Prix Unitaire", "Total Ligne"];
+      const tableRows: (string | number)[][] = [];
 
-    quote.lignes.forEach(line => {
-      const lineData = [
-        line.num_composant_fabric,
-        line.description || line.libelle_extrait_comp || "N/A",
-        line.quantite_demande,
-        `${line.prix_unitaire.toFixed(2)} €`,
-        `${(line.prix_unitaire * line.quantite_demande).toFixed(2)} €`
-      ];
-      tableRows.push(lineData);
-    });
+      quote.lignes.forEach(line => {
+        const lineData = [
+          line.num_composant_fabric,
+          line.description || line.libelle_extrait_comp || "N/A",
+          line.quantite_demande,
+          `${line.prix_unitaire.toFixed(2)} €`,
+          `${(line.prix_unitaire * line.quantite_demande).toFixed(2)} €`
+        ];
+        tableRows.push(lineData);
+      });
 
-    // @ts-ignore - jspdf-autotable plugin attaches to jsPDF
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 45,
-      theme: 'grid',
-      styles: { fontSize: 10 },
-      headStyles: { fillColor: [37, 99, 235] } // Blue-600
-    });
+      // @ts-expect-error autoTable is added by jspdf-autotable plugin
+      doc.autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 45,
+        theme: 'grid',
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [37, 99, 235] } // Blue-600
+      });
 
-    // Total
-    // @ts-ignore
-    const finalY = doc.lastAutoTable.finalY || 45;
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.text(`Total : ${quote.prix_total.toFixed(2)} €`, 14, finalY + 15);
+      // Total
+      // @ts-expect-error autoTable is added by jspdf-autotable plugin
+      const finalY = doc.lastAutoTable.finalY || 60;
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text(`Total : ${quote.prix_total.toFixed(2)} €`, 14, finalY + 15);
 
-    doc.save(`Devis_${quote.id_devis}.pdf`);
+      doc.save(`Devis_${quote.id_devis}.pdf`);
+    } catch (error: unknown) {
+      console.error('Error generating PDF:', error);
+    }
   };
 
   return (

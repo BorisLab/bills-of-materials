@@ -14,9 +14,19 @@ describe('Dropzone Component', () => {
     expect(screen.getByText('Cliquez ou glissez-déposez un fichier ici')).toBeInTheDocument();
   });
 
-  it('shows uploading state', () => {
-    render(<Dropzone onFileSelect={mockOnFileSelect} isUploading={true} />);
-    expect(screen.getByText("Analyse du document en cours par l'OCR...")).toBeInTheDocument();
+  it('shows uploading state with progress bar', () => {
+    // First we must render with a file, then update to uploading=true
+    // But since the internal state is lost if we don't simulate it, we can just fire the event then rerender
+    const { rerender } = render(<Dropzone onFileSelect={mockOnFileSelect} isUploading={false} />);
+    
+    const file = new File(['dummy content'], 'example.png', { type: 'image/png' });
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    fireEvent.change(input, { target: { files: [file] } });
+    
+    // Now rerender with isUploading = true
+    rerender(<Dropzone onFileSelect={mockOnFileSelect} isUploading={true} />);
+    
+    expect(screen.getByText(/Analyse OCR en cours\.\.\./i)).toBeInTheDocument();
   });
 
   it('handles file selection', () => {

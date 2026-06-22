@@ -34,8 +34,14 @@ export default function RegisterPage() {
       // Inscription réussie, redirection vers la page de connexion
       toast.success('Inscription réussie ! Vous pouvez maintenant vous connecter.');
       router.push('/login?registered=true');
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Une erreur est survenue lors de l'inscription");
+        toast.error(err.message);
+      } else {
+        setError("Une erreur est survenue lors de l'inscription");
+        toast.error("Une erreur est survenue lors de l'inscription");
+      }
     } finally {
       setIsLoading(false);
     }

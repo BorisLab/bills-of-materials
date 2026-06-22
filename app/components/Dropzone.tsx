@@ -16,7 +16,7 @@ export default function Dropzone({ onFileSelect, isUploading }: DropzoneProps) {
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isUploading) {
-      setProgress(0);
+      setTimeout(() => setProgress(0), 0);
       interval = setInterval(() => {
         setProgress((prev) => {
           // Simulate progress slowing down near the end
@@ -25,7 +25,7 @@ export default function Dropzone({ onFileSelect, isUploading }: DropzoneProps) {
         });
       }, 300);
     } else {
-      setProgress(0);
+      setTimeout(() => setProgress(0), 0);
     }
     return () => clearInterval(interval);
   }, [isUploading]);

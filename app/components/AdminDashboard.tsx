@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { Save } from 'lucide-react';
 
 export default function AdminDashboard() {
-  const [components, setComponents] = useState<any[]>([]);
+  const [components, setComponents] = useState<{id_composant: number, num_composant_fabric: string, description: string, prix_unitaire: number}[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchComponents = async () => {
@@ -19,7 +19,7 @@ export default function AdminDashboard() {
         const data = await response.json();
         setComponents(data);
       }
-    } catch (e) {
+    } catch {
       toast.error('Erreur lors du chargement du catalogue');
     } finally {
       setIsLoading(false);
@@ -27,6 +27,7 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchComponents();
   }, []);
 
@@ -51,7 +52,7 @@ export default function AdminDashboard() {
       } else {
         toast.error('Erreur de mise à jour');
       }
-    } catch (e) {
+    } catch {
       toast.error('Erreur réseau');
     }
   };

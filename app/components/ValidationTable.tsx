@@ -38,7 +38,7 @@ export default function ValidationTable({ initialComponents, onSave, isSaving }:
   if (components.length === 0) {
     return (
       <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 text-center">
-        <p className="text-gray-500">Aucun composant n'a été trouvé. Veuillez vérifier votre document ou le rajouter manuellement.</p>
+        <p className="text-gray-500">Aucun composant n&apos;a été trouvé. Veuillez vérifier votre document ou le rajouter manuellement.</p>
       </div>
     );
   }
@@ -51,7 +51,7 @@ export default function ValidationTable({ initialComponents, onSave, isSaving }:
             <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
             Validation des composants ({components.length})
           </h3>
-          <p className="text-sm text-gray-500 mt-1">Veuillez corriger les éventuelles erreurs de l'OCR avant l'enregistrement.</p>
+          <p className="text-sm text-gray-500 mt-1">Veuillez corriger les éventuelles erreurs de l&apos;OCR avant l&apos;enregistrement.</p>
         </div>
         <button
           onClick={handleSave}
