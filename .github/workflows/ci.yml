@@ -33,6 +33,9 @@ jobs:
           flake8 app tests --max-line-length=120 --extend-ignore=E,W || true # Replace || true with exit 1 if you want strict linting
           
       - name: Run Pytest
+        env:
+          OCR_SPACE_API_KEY: "dummy_key"
+          DATABASE_URL: "sqlite+aiosqlite:///:memory:"
         run: |
           cd backend
           pytest tests/ -v

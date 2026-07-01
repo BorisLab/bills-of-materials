@@ -1,7 +1,11 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from fastapi import HTTPException
+import app.services.ocr_service
 from app.services.ocr_service import extract_text_from_file
+
+# Set dummy key for tests to avoid raising HTTPException in environments without configured keys (like CI)
+app.services.ocr_service.OCR_SPACE_API_KEY = "dummy_key"
 
 @pytest.mark.asyncio
 async def test_extract_text_from_file_success():
