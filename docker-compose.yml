@@ -13,6 +13,7 @@ services:
       - /app/.next
     environment:
       - NODE_ENV=development
+      - BACKEND_URL=http://api:8000
     command: sh -c "npm run lint && npm run test && npm run dev"
     depends_on:
       - api
