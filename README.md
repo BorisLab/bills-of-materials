@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bill of Materials (BOM) App
 
-## Getting Started
+Cette application web permet d'importer, de traiter et de gérer des nomenclatures de composants électroniques (Bill of Materials - BOM). Elle extrait automatiquement les composants à partir de documents importés (images ou pdf) grâce à un traitement OCR, permet la validation des données, génère des devis tarifés et intègre un flux de validation pour les équipes commerciales et administratives.
 
-First, run the development server:
+## Architecture technique
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+L'application repose sur une architecture découplée contenant les briques suivantes :
+* Frontend : Next.js (TypeScript, Tailwind CSS, Jest, ESLint)
+* Backend : FastAPI (Python, SQLAlchemy, PostgreSQL, Pytest, Flake8)
+* Base de données : PostgreSQL
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Fonctionnalités principales
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+L'accès aux fonctionnalités est segmenté selon 3 rôles d'utilisateurs distincts :
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* Client : 
+  * Importation de nomenclatures sous forme de fichiers PDF ou image.
+  * Analyse automatique par OCR pour extraire la liste des composants, descriptions et quantités demandées.
+  * Tableau interactif pour vérifier, modifier et valider les informations extraites.
+  * Génération automatique d'un devis chiffré basé sur le catalogue de prix.
+  * Exportation du devis au format PDF.
 
-## Learn More
+* Commercial :
+  * Espace de suivi de tous les devis générés par les clients.
+  * Actions de validation ou de rejet des devis en attente.
 
-To learn more about Next.js, take a look at the following resources:
+* Administrateur :
+  * Espace de gestion du catalogue de composants.
+  * Mise à jour et enregistrement des prix unitaires de chaque référence de composant.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Installation et démarrage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Prérequis
+* Docker et Docker Compose
+* Clé d'API OCR Space (https://ocr.space/)
 
-## Deploy on Vercel
+### Lancement avec Docker
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Créez un fichier `.env` à la racine ou exportez vos variables d'environnement, notamment la clé OCR :
+   ```bash
+   OCR_SPACE_API_KEY=votre_cle_api
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. Lancez l'ensemble des services via Docker Compose :
+   ```bash
+   docker-compose up --build
+   ```
+
+Le frontend est accessible sur `http://localhost:3000` et l'API sur `http://localhost:8000`.
+
+### Lancement en mode développement local (sans Docker)
+
+#### Backend
+
+1. Accédez au dossier backend et configurez un environnement virtuel Python :
+   ```bash
+   cd backend
+   python -m venv venv
+   source venv/bin/activate # Sur Windows: venv\Scripts\activate
+   ```
+
+2. Installez les dépendances :
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Configurez vos variables d'environnement dans un fichier `.env` ou dans votre terminal :
+   ```bash
+   DATABASE_URL=sqlite+aiosqlite:///:memory:
+   SECRET_KEY=votre_secret_jwt
+   OCR_SPACE_API_KEY=votre_cle_api
+   ```
+
+4. Lancez le serveur de développement Uvicorn :
+   ```bash
+   uvicorn app.main:app --reload
+   ```
+
+#### Frontend
+
+1. Accédez à la racine du projet et installez les dépendances Node :
+   ```bash
+   npm install
+   ```
+
+2. Lancez le serveur de développement Next.js :
+   ```bash
+   npm run dev
+   ```
+
+## Tests et Qualité du code
+
+Le projet intègre un pipeline de CI (GitHub Actions) qui valide chaque push et pull request sur les branches `main` et `dev`.
+
+### Commandes Frontend
+* Exécuter le linter (ESLint) : `npm run lint`
+* Exécuter les tests unitaires (Jest) : `npm test`
+
+### Commandes Backend
+* Exécuter le linter (Flake8) : `flake8 app tests`
+* Exécuter les tests unitaires (Pytest) : `pytest tests/`
