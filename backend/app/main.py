@@ -30,4 +30,4 @@ app.include_router(components.router, prefix="/api/components", tags=["component
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to Bill of Materials API"}
+    return {"message": "Bill of Materials API"}

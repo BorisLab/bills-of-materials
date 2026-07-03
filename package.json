@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "backend": "cd backend && .\\venv\\Scripts\\uvicorn app.main:app --reload",
     "start": "next start",
     "lint": "eslint",
     "test": "jest"
