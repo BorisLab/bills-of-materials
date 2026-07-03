@@ -10,7 +10,7 @@ export default function AdminDashboard() {
 
   const fetchComponents = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/components/', {
+      const response = await fetch('/api/components/', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -39,7 +39,7 @@ export default function AdminDashboard() {
 
   const updatePrice = async (id: number, price: number) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/components/${id}`, {
+      const response = await fetch(`/api/components/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

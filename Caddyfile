@@ -1,0 +1,8 @@
+:80 {
+    # Route API requests to FastAPI
+    reverse_proxy /api/* http://api:8000
+    reverse_proxy /auth/* http://api:8000
+
+    # Route all other traffic to Next.js
+    reverse_proxy /* http://web:3000
+}

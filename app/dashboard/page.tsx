@@ -50,7 +50,7 @@ export default function DashboardPage() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://localhost:8000/api/upload-bom', {
+      const response = await fetch('/api/upload-bom', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -81,7 +81,7 @@ export default function DashboardPage() {
     setIsSaving(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/quotes', {
+      const response = await fetch('/api/quotes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
