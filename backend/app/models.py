@@ -4,16 +4,18 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, Enum, ForeignKe
 from sqlalchemy.orm import relationship
 from .database import Base
 
+
 class RoleEnum(str, enum.Enum):
     admin = "admin"
     commercial = "commercial"
-    ingenieur = "ingenieur"
     client = "client"
+
 
 class QuoteStatusEnum(str, enum.Enum):
     en_attente = "en_attente"
     valide = "valide"
     refuse = "refuse"
+
 
 class User(Base):
     __tablename__ = "utilisateurs"
@@ -25,6 +27,7 @@ class User(Base):
 
     devis = relationship("Quote", back_populates="utilisateur")
 
+
 class Component(Base):
     __tablename__ = "composants"
 
@@ -35,6 +38,7 @@ class Component(Base):
 
     lignes_devis = relationship("QuoteLine", back_populates="composant")
 
+
 class Quote(Base):
     __tablename__ = "devis"
 
@@ -42,10 +46,11 @@ class Quote(Base):
     prix_total = Column(Float, nullable=True)
     statut = Column(Enum(QuoteStatusEnum), default=QuoteStatusEnum.en_attente, nullable=False)
     cree_le = Column(DateTime, default=datetime.utcnow, nullable=False)
-    
+
     utilisateur_id = Column(Integer, ForeignKey("utilisateurs.id_utilisateur"), nullable=False)
     utilisateur = relationship("User", back_populates="devis")
     lignes = relationship("QuoteLine", back_populates="devis", cascade="all, delete-orphan")
+
 
 class QuoteLine(Base):
     __tablename__ = "lignes_devis"
