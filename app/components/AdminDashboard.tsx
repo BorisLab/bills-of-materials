@@ -10,7 +10,7 @@ export default function AdminDashboard() {
 
   const fetchComponents = async () => {
     try {
-      const response = await fetch('/api/components/', {
+      const response = await fetch('/api/components', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
