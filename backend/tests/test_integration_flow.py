@@ -43,7 +43,7 @@ async def test_end_to_end_integration(async_client: AsyncClient):
         {"num_composant_fabric": "RC0402FR-071KL", "description": "Resistor 1k", "quantite_demande": 10},
         {"num_composant_fabric": "TEST-COMP-01", "description": "Test Component", "quantite_demande": 5}
     ]
-    response = await async_client.post("/api/quotes/", json=quote_data, headers={"Authorization": f"Bearer {client_token}"})
+    response = await async_client.post("/api/quotes", json=quote_data, headers={"Authorization": f"Bearer {client_token}"})
     assert response.status_code == 201
     quote = response.json()
     assert quote["statut"] == "en_attente"
@@ -51,12 +51,12 @@ async def test_end_to_end_integration(async_client: AsyncClient):
     assert quote["prix_total"] > 0
 
     # 4. Client sees only their quotes
-    response = await async_client.get("/api/quotes/", headers={"Authorization": f"Bearer {client_token}"})
+    response = await async_client.get("/api/quotes", headers={"Authorization": f"Bearer {client_token}"})
     assert response.status_code == 200
     assert len(response.json()) == 1
 
     # 5. Commercial lists all quotes and validates the quote
-    response = await async_client.get("/api/quotes/", headers={"Authorization": f"Bearer {comm_token}"})
+    response = await async_client.get("/api/quotes", headers={"Authorization": f"Bearer {comm_token}"})
     assert response.status_code == 200
     assert len(response.json()) >= 1
     
@@ -64,11 +64,11 @@ async def test_end_to_end_integration(async_client: AsyncClient):
     assert response.status_code == 200
 
     # Verify status changed
-    response = await async_client.get("/api/quotes/", headers={"Authorization": f"Bearer {client_token}"})
+    response = await async_client.get("/api/quotes", headers={"Authorization": f"Bearer {client_token}"})
     assert response.json()[0]["statut"] == "valide"
 
     # 6. Admin lists components and updates price
-    response = await async_client.get("/api/components/", headers={"Authorization": f"Bearer {admin_token}"})
+    response = await async_client.get("/api/components", headers={"Authorization": f"Bearer {admin_token}"})
     assert response.status_code == 200
     components = response.json()
     assert len(components) >= 2 # The ones created by the quote
@@ -78,7 +78,7 @@ async def test_end_to_end_integration(async_client: AsyncClient):
     assert response.status_code == 200
     
     # Verify price changed
-    response = await async_client.get("/api/components/", headers={"Authorization": f"Bearer {admin_token}"})
+    response = await async_client.get("/api/components", headers={"Authorization": f"Bearer {admin_token}"})
     updated_comp = next(c for c in response.json() if c["id_composant"] == comp_id)
     assert updated_comp["prix_unitaire"] == 99.99
 

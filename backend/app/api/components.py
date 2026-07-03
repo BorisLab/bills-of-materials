@@ -12,7 +12,7 @@ router = APIRouter()
 class ComponentUpdate(BaseModel):
     prix_unitaire: float
 
-@router.get("/")
+@router.get("")
 async def list_components(
     db: AsyncSession = Depends(get_db)
 ):

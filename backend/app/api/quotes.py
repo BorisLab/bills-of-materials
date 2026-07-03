@@ -11,7 +11,7 @@ from app.services.pricing import calculate_deterministic_price
 
 router = APIRouter()
 
-@router.post("/", response_model=QuoteOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=QuoteOut, status_code=status.HTTP_201_CREATED)
 async def create_quote(
     components: List[ComponentCreate],
     current_user: User = Depends(get_current_user),
@@ -102,7 +102,7 @@ async def create_quote(
     
     return response
 
-@router.get("/", response_model=List[Dict])
+@router.get("", response_model=List[Dict])
 async def list_quotes(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)

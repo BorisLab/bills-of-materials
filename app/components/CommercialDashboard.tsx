@@ -10,7 +10,7 @@ export default function CommercialDashboard() {
 
   const fetchQuotes = async () => {
     try {
-      const response = await fetch('/api/quotes/', {
+      const response = await fetch('/api/quotes', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

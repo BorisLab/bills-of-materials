@@ -61,7 +61,7 @@ export default function RegisterPage() {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-3">
+          <div className="rounded-md space-y-3">
             <div>
               <label htmlFor="name" className="sr-only">Nom complet</label>
               <input
