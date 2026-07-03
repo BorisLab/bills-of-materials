@@ -10,7 +10,7 @@ export default function CommercialDashboard() {
 
   const fetchQuotes = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/quotes/', {
+      const response = await fetch('/api/quotes/', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -34,7 +34,7 @@ export default function CommercialDashboard() {
 
   const updateStatus = async (id_devis: number, statut: string) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/quotes/${id_devis}?statut=${statut}`, {
+      const response = await fetch(`/api/quotes/${id_devis}?statut=${statut}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
