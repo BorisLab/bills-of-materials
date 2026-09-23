@@ -74,7 +74,7 @@ export default function ValidationTable({ initialComponents, onSave, isSaving }:
           )}
         </button>
       </div>
-      
+
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -107,7 +107,7 @@ export default function ValidationTable({ initialComponents, onSave, isSaving }:
                     type="text"
                     value={comp.num_composant_fabric}
                     onChange={(e) => handleUpdate(index, 'num_composant_fabric', e.target.value)}
-                    className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm px-2 py-1 border"
+                    className="block w-full border-gray-300 text-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm px-2 py-1 border"
                   />
                 </td>
                 <td className="px-6 py-4 w-full">
@@ -115,7 +115,7 @@ export default function ValidationTable({ initialComponents, onSave, isSaving }:
                     type="text"
                     value={comp.description}
                     onChange={(e) => handleUpdate(index, 'description', e.target.value)}
-                    className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm px-2 py-1 border"
+                    className="block w-full border-gray-300 text-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm px-2 py-1 border"
                   />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -123,7 +123,7 @@ export default function ValidationTable({ initialComponents, onSave, isSaving }:
                     type="number"
                     value={comp.quantite_demande}
                     onChange={(e) => handleUpdate(index, 'quantite_demande', parseInt(e.target.value) || 0)}
-                    className="block w-24 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm px-2 py-1 border"
+                    className="block w-24 border-gray-300 text-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm px-2 py-1 border"
                   />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

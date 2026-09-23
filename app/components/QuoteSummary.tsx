@@ -126,9 +126,9 @@ export default function QuoteSummary({ quote, onReset }: QuoteSummaryProps) {
               {quote.lignes.map((line) => (
                 <tr key={line.id_ligne_devis} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{line.num_composant_fabric}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{line.description}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">{line.quantite_demande}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">{line.prix_unitaire.toFixed(2)} €</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{line.description}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 text-right">{line.quantite_demande}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 text-right">{line.prix_unitaire.toFixed(2)} €</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
                     {(line.prix_unitaire * line.quantite_demande).toFixed(2)} €
                   </td>
