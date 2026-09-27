@@ -70,8 +70,8 @@ export default function Dropzone({ onFileSelect, isUploading }: DropzoneProps) {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`relative border-2 border-dashed rounded-xl p-12 text-center transition-colors cursor-pointer
-            ${isDragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-gray-50 hover:bg-gray-100'}
+          className={`relative border-2 border-dashed rounded-md p-12 text-center transition-all cursor-pointer
+            ${isDragOver ? 'border-[#ff7a18] bg-[#181818]' : 'border-[#262626] bg-[#181818] hover:border-[#ff7a18]/50 hover:bg-[#202020]'}
             ${isUploading ? 'opacity-50 pointer-events-none' : ''}
           `}
         >
@@ -82,30 +82,30 @@ export default function Dropzone({ onFileSelect, isUploading }: DropzoneProps) {
             disabled={isUploading}
             accept="image/*,application/pdf"
           />
-          <UploadCloud className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <p className="text-lg font-medium text-gray-900">
-            Cliquez ou glissez-déposez un fichier ici
+          <UploadCloud className="mx-auto h-12 w-12 text-[#ff7a18] mb-4" />
+          <p className="text-lg font-medium text-white">
+            Cliquez ou glissez-déposez un fichier BOM ici
           </p>
-          <p className="mt-1 text-sm text-gray-500">
-            PDF, PNG, JPG supportés (Max 1MB pour la version gratuite)
+          <p className="mt-1 text-sm text-gray-400">
+            Fichiers PDF, PNG, JPG supportés pour l&apos;analyse OCR
           </p>
         </div>
       ) : (
-        <div className="flex flex-col p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
+        <div className="flex flex-col p-5 bg-[#181818] border border-[#262626] rounded-md shadow-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
+              <div className="p-3 bg-[#ff7a18]/10 text-[#ff7a18] rounded-md border border-[#ff7a18]/20">
                 <FileIcon className="h-6 w-6" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">{selectedFile.name}</p>
-                <p className="text-xs text-gray-500">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+                <p className="text-sm font-medium text-white">{selectedFile.name}</p>
+                <p className="text-xs font-mono text-gray-400">{(selectedFile.size / 1024).toFixed(1)} KB</p>
               </div>
             </div>
             {!isUploading && (
               <button
                 onClick={clearFile}
-                className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                className="p-2 text-gray-400 hover:text-red-400 transition-colors"
                 title="Retirer le fichier"
               >
                 <X className="h-5 w-5" />
@@ -115,13 +115,13 @@ export default function Dropzone({ onFileSelect, isUploading }: DropzoneProps) {
           
           {isUploading && (
             <div className="mt-4 w-full">
-              <div className="flex justify-between text-xs text-gray-500 mb-1">
+              <div className="flex justify-between text-xs font-mono text-gray-400 mb-1">
                 <span>Analyse OCR en cours...</span>
                 <span>{Math.round(progress)}%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div className="w-full bg-[#262626] rounded-full h-2">
                 <div 
-                  className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
+                  className="bg-[#ff7a18] h-2 rounded-full transition-all duration-300 ease-out" 
                   style={{ width: `${progress}%` }}
                 ></div>
               </div>

@@ -53,7 +53,7 @@ describe('ValidationTable Component', () => {
     fireEvent.change(qtyInput, { target: { value: '15' } });
     
     // Click save
-    const saveBtn = screen.getByText(/Confirmer et Enregistrer/i);
+    const saveBtn = screen.getByText(/Confirmer & Enregistrer Devis/i);
     fireEvent.click(saveBtn);
     
     expect(mockOnSave).toHaveBeenCalledTimes(1);

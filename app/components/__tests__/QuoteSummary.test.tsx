@@ -45,8 +45,8 @@ describe('QuoteSummary Component', () => {
   it('renders quote details correctly', () => {
     render(<QuoteSummary quote={mockQuote} onReset={mockOnReset} />);
     
-    expect(screen.getByText(/Devis généré avec succès !/i)).toBeInTheDocument();
-    expect(screen.getByText(/Le devis #1234 a bien été enregistré/i)).toBeInTheDocument();
+    expect(screen.getByText(/Devis n°#1234 Généré !/i)).toBeInTheDocument();
+    expect(screen.getByText(/Le devis a été enregistré et transmis/i)).toBeInTheDocument();
     expect(screen.getByText('145.50 €')).toBeInTheDocument();
     expect(screen.getByText('RES-01')).toBeInTheDocument();
     expect(screen.getByText('10k Ohm')).toBeInTheDocument();
