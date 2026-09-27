@@ -9,6 +9,7 @@ class RoleEnum(str, enum.Enum):
     admin = "admin"
     commercial = "commercial"
     client = "client"
+    acheteur = "acheteur"
 
 
 class QuoteStatusEnum(str, enum.Enum):
@@ -35,6 +36,9 @@ class Component(Base):
     num_composant_fabric = Column(String, unique=True, index=True, nullable=False)
     description = Column(String, nullable=True)
     prix_unitaire = Column(Float, nullable=False)
+    stock_disponible = Column(Integer, default=100, nullable=False)
+    delai_livraison_semaines = Column(Integer, default=1, nullable=False)
+    equivalent_ref = Column(String, nullable=True)
 
     lignes_devis = relationship("QuoteLine", back_populates="composant")
 
@@ -44,8 +48,11 @@ class Quote(Base):
 
     id_devis = Column(Integer, primary_key=True, index=True)
     prix_total = Column(Float, nullable=True)
+    remise_pourcentage = Column(Float, default=0.0, nullable=False)
+    commentaire_commercial = Column(String, nullable=True)
     statut = Column(Enum(QuoteStatusEnum), default=QuoteStatusEnum.en_attente, nullable=False)
     cree_le = Column(DateTime, default=datetime.utcnow, nullable=False)
+    mis_a_jour_le = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     utilisateur_id = Column(Integer, ForeignKey("utilisateurs.id_utilisateur"), nullable=False)
     utilisateur = relationship("User", back_populates="devis")

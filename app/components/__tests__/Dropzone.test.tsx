@@ -11,7 +11,7 @@ describe('Dropzone Component', () => {
 
   it('renders correctly', () => {
     render(<Dropzone onFileSelect={mockOnFileSelect} isUploading={false} />);
-    expect(screen.getByText('Cliquez ou glissez-déposez un fichier ici')).toBeInTheDocument();
+    expect(screen.getByText('Cliquez ou glissez-déposez un fichier BOM ici')).toBeInTheDocument();
   });
 
   it('shows uploading state with progress bar', () => {

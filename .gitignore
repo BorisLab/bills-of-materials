@@ -56,4 +56,7 @@ env/
 .venv/
 .pytest_cache/
 .coverage
-htmlcov/
+# databases
+*.db
+*.sqlite
+

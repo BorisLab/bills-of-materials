@@ -96,7 +96,10 @@ async def create_quote(
     response = {
         "id_devis": final_quote.id_devis,
         "prix_total": final_quote.prix_total,
+        "remise_pourcentage": final_quote.remise_pourcentage,
+        "commentaire_commercial": final_quote.commentaire_commercial,
         "statut": final_quote.statut,
+        "cree_le": final_quote.cree_le.isoformat() if final_quote.cree_le else None,
         "lignes": lines_out
     }
     
@@ -107,26 +110,100 @@ async def list_quotes(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    # For MVP, if commercial or admin, show all. If client, show only their quotes.
-    if current_user.role in ["commercial", "admin"]:
-        result = await db.execute(select(Quote).order_by(Quote.id_devis.desc()))
-    else:
-        result = await db.execute(select(Quote).where(Quote.utilisateur_id == current_user.id_utilisateur).order_by(Quote.id_devis.desc()))
+    from sqlalchemy.orm import selectinload
+    query = select(Quote).options(selectinload(Quote.lignes).selectinload(QuoteLine.composant))
     
+    if current_user.role in ["commercial", "admin", "acheteur"]:
+        query = query.order_by(Quote.id_devis.desc())
+    else:
+        query = query.where(Quote.utilisateur_id == current_user.id_utilisateur).order_by(Quote.id_devis.desc())
+    
+    result = await db.execute(query)
     quotes = result.scalars().all()
-    return [{"id_devis": q.id_devis, "prix_total": q.prix_total, "statut": q.statut.value} for q in quotes]
+    
+    out = []
+    for q in quotes:
+        lines_out = []
+        for line in q.lignes:
+            lines_out.append({
+                "id_ligne_devis": line.id_ligne_devis,
+                "quantite_demande": line.quantite_demande,
+                "libelle_extrait_comp": line.libelle_extrait_comp,
+                "composant_id": line.composant.id_composant,
+                "num_composant_fabric": line.composant.num_composant_fabric,
+                "description": line.composant.description,
+                "prix_unitaire": line.composant.prix_unitaire
+            })
+        out.append({
+            "id_devis": q.id_devis,
+            "prix_total": q.prix_total,
+            "remise_pourcentage": q.remise_pourcentage,
+            "commentaire_commercial": q.commentaire_commercial,
+            "statut": q.statut.value,
+            "cree_le": q.cree_le.strftime("%d/%m/%Y %H:%M") if q.cree_le else "",
+            "lignes": lines_out
+        })
+    return out
+
+@router.get("/{id_devis}", response_model=Dict)
+async def get_quote_detail(
+    id_devis: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    from sqlalchemy.orm import selectinload
+    result = await db.execute(
+        select(Quote)
+        .options(selectinload(Quote.lignes).selectinload(QuoteLine.composant))
+        .where(Quote.id_devis == id_devis)
+    )
+    quote = result.scalars().first()
+    if not quote:
+        raise HTTPException(status_code=404, detail="Devis non trouvé")
+
+    if current_user.role == "client" and quote.utilisateur_id != current_user.id_utilisateur:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+
+    lines_out = []
+    for line in quote.lignes:
+        lines_out.append({
+            "id_ligne_devis": line.id_ligne_devis,
+            "quantite_demande": line.quantite_demande,
+            "libelle_extrait_comp": line.libelle_extrait_comp,
+            "composant_id": line.composant.id_composant,
+            "num_composant_fabric": line.composant.num_composant_fabric,
+            "description": line.composant.description,
+            "prix_unitaire": line.composant.prix_unitaire
+        })
+
+    return {
+        "id_devis": quote.id_devis,
+        "prix_total": quote.prix_total,
+        "remise_pourcentage": quote.remise_pourcentage,
+        "commentaire_commercial": quote.commentaire_commercial,
+        "statut": quote.statut.value,
+        "cree_le": quote.cree_le.strftime("%d/%m/%Y %H:%M") if quote.cree_le else "",
+        "lignes": lines_out
+    }
 
 @router.put("/{id_devis}", status_code=status.HTTP_200_OK)
 async def update_quote_status(
     id_devis: int,
     statut: str,
+    remise_pourcentage: float = 0.0,
+    commentaire_commercial: str = None,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     if current_user.role not in ["commercial", "admin"]:
         raise HTTPException(status_code=403, detail="Forbidden")
 
-    result = await db.execute(select(Quote).where(Quote.id_devis == id_devis))
+    from sqlalchemy.orm import selectinload
+    result = await db.execute(
+        select(Quote)
+        .options(selectinload(Quote.lignes).selectinload(QuoteLine.composant))
+        .where(Quote.id_devis == id_devis)
+    )
     quote = result.scalars().first()
     if not quote:
         raise HTTPException(status_code=404, detail="Quote not found")
@@ -136,5 +213,14 @@ async def update_quote_status(
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid status")
 
+    if remise_pourcentage >= 0 and remise_pourcentage <= 100:
+        quote.remise_pourcentage = remise_pourcentage
+        # Recalculate subtotal
+        subtotal = sum(l.composant.prix_unitaire * l.quantite_demande for l in quote.lignes)
+        quote.prix_total = round(subtotal * (1 - remise_pourcentage / 100.0), 2)
+
+    if commentaire_commercial is not None:
+        quote.commentaire_commercial = commentaire_commercial
+
     await db.commit()
-    return {"message": "Status updated successfully"}
+    return {"message": "Status updated successfully", "prix_total": quote.prix_total}

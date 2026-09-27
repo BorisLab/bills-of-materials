@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { Cpu } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -48,24 +49,29 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-        <div>
-          <h2 className="mt-4 text-center text-3xl font-extrabold text-gray-900">
-            Connexion
+    <div className="min-h-screen flex items-center justify-center bg-[#000000] text-white py-12 px-4 sm:px-6 lg:px-8 font-sans">
+      <div className="max-w-md w-full space-y-8 bg-[#181818] p-8 rounded-md shadow-2xl border border-[#262626]">
+        <div className="text-center">
+          <div className="inline-flex p-3 bg-[#ff7a18] text-black rounded-md mb-3 font-bold shadow-md">
+            <Cpu className="h-8 w-8 stroke-[2.5]" />
+          </div>
+          <h2 className="text-3xl font-extrabold tracking-tight text-white">
+            Connexion BOM <span className="text-[#ff7a18]">SaaS</span>
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-400">
             Ou{' '}
-            <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link href="/register" className="font-medium text-[#ff7a18] hover:text-[#e0650d] transition-colors">
               créez un nouveau compte
             </Link>
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md -space-y-px">
+        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+          <div className="space-y-4">
             <div>
-              <label htmlFor="email-address" className="sr-only">Email</label>
+              <label htmlFor="email-address" className="block text-xs font-mono text-gray-300 mb-1">
+                Adresse email
+              </label>
               <input
                 id="email-address"
                 name="email"
@@ -74,12 +80,14 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Adresse email"
+                className="w-full bg-[#121212] border border-[#333333] text-white font-mono rounded-md px-3 py-2 text-sm focus:border-[#ff7a18] focus:outline-none"
+                placeholder="nom@domaine.com"
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">Mot de passe</label>
+              <label htmlFor="password" className="block text-xs font-mono text-gray-300 mb-1">
+                Mot de passe
+              </label>
               <input
                 id="password"
                 name="password"
@@ -88,8 +96,8 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Mot de passe"
+                className="w-full bg-[#121212] border border-[#333333] text-white font-mono rounded-md px-3 py-2 text-sm focus:border-[#ff7a18] focus:outline-none"
+                placeholder="••••••••"
               />
             </div>
           </div>
@@ -98,9 +106,9 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
+              className="w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#ff7a18] hover:bg-[#e0650d] transition-colors disabled:opacity-50 shadow-md font-sans"
             >
-              {isLoading ? 'Connexion...' : 'Se connecter'}
+              {isLoading ? 'Connexion en cours...' : 'Se connecter'}
             </button>
           </div>
         </form>
